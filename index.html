@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منصة الاسراء التعليمية</title>
+    <style>
+        :root { --gold: #D4AF37; --black: #0e0e0e; --dark-gray: #1c1c1c; }
+        body { margin: 0; background: var(--black); color: white; font-family: 'Cairo', sans-serif; }
+        
+        /* شاشة الدخول */
+        #auth-screen { position: fixed; inset: 0; background: var(--black); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .auth-card { background: var(--dark-gray); padding: 40px; border: 2px solid var(--gold); border-radius: 15px; text-align: center; width: 350px; box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+        
+        /* الواجهة الرئيسية */
+        header { background: var(--dark-gray); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--gold); }
+        .gold-btn { background: var(--gold); color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        
+        .main-container { display: flex; padding: 20px; gap: 20px; min-height: 70vh; }
+        
+        /* لوحة التحكم للأدمن */
+        #admin-panel { width: 300px; background: var(--dark-gray); padding: 20px; border-radius: 10px; border: 1px solid var(--gold); display: none; }
+        
+        /* الكورسات */
+        .courses-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .course-card { background: var(--dark-gray); border-radius: 10px; overflow: hidden; border: 1px solid #333; position: relative; transition: 0.3s; }
+        .course-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .course-img { width: 100%; height: 150px; background: #333; display: flex; justify-content: center; align-items: center; font-size: 40px; }
+        .course-info { padding: 15px; }
+        .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; }
+
+        /* التوقيع الذهبي */
+        footer { margin-top: 50px; padding: 40px; text-align: center; border-top: 1px solid #333; }
+        .signature { font-size: 40px; color: var(--gold); font-weight: bold; text-shadow: 2px 2px 5px #000; }
+        
+        input, select { width: 100%; padding: 10px; margin: 10px 0; background: #000; border: 1px solid #444; color: white; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<div id="auth-screen">
+    <div class="auth-card">
+        <h1 style="color:var(--gold)">الاسراء التعليمية</h1>
+        <input type="text" id="login-name" placeholder="الاسم">
+        <input type="text" id="login-phone" placeholder="رقم الهاتف">
+        <button class="gold-btn" style="width:100%" onclick="handleAuth()">دخول</button>
+    </div>
+</div>
+
+<header>
+    <div style="font-size: 24px; font-weight: bold; color: var(--gold);">الاسراء التعليمية</div>
+    <div id="user-info"></div>
+</header>
+
+<div class="main-container">
+    <aside id="admin-panel">
+        <h2 style="color:var(--gold)">لوحة الأدمن حسام</h2>
+        <input type="text" id="c-name" placeholder="اسم الكورس">
+        <input type="text" id="c-price" placeholder="سعر الكورس">
+        <button class="gold-btn" onclick="addNewCourse()">إضافة كورس جديد</button>
+        <hr style="border:0.5px solid #444; margin:20px 0">
+        <p style="font-size:12px">يمكنك فتح الكورسات للطلاب من بطاقة الكورس</p>
+    </aside>
+
+    <div class="courses-grid" id="courses-list">
+        <!-- الكورسات ستظهر هنا -->
+    </div>
+</div>
+
+<footer>
+    <div class="signature">ميس اسراء فرج</div>
+</footer>
+
+<script>
+    const ADMIN_DATA = { name: "حسام", phone: "01040672314" };
+    let courses = JSON.parse(localStorage.getItem('courses')) || [];
+    let currentUser = null;
+
+    function handleAuth() {
+        const name = document.getElementById('login-name').value;
+        const phone = document.getElementById('login-phone').value;
+
+        if(!name || !phone) return alert("من فضلك اكمل البيانات");
+
+        currentUser = { name, phone, isAdmin: (name === ADMIN_DATA.name && phone === ADMIN_DATA.phone) };
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('user-info').innerText = `مرحباً: ${name}`;
+
+        if(currentUser.isAdmin) {
+            document.getElementById('admin-panel').style.display = 'block';
+        }
+        renderCourses();
+    }
+
+    function addNewCourse() {
+        const name = document.getElementById('c-name').value;
+        const price = document.getElementById('c-price').value;
+        if(!name || !price) return;
+
+        courses.push({ id: Date.now(), name, price, isOpen: false, video: "", pdf: "" });
+        saveAndRender();
+    }
+
+    function toggleCourse(id) {
+        courses = courses.map(c => c.id === id ? {...c, isOpen: !c.isOpen} : c);
+        saveAndRender();
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('courses', JSON.stringify(courses));
+        renderCourses();
+    }
+
+    function renderCourses() {
+        const list = document.getElementById('courses-list');
+        list.innerHTML = '';
+
+        courses.forEach(c => {
+            const isLocked = !c.isOpen && !currentUser.isAdmin;
+            list.innerHTML += `
+                <div class="course-card">
+                    ${isLocked ? `
+                        <div class="locked-overlay">
+                            <span style="font-size:40px">🔒</span>
+                            <p>تواصل مع الأدمن لفتح الكورس</p>
+                        </div>
+                    ` : ''}
+                    <div class="course-img">📚</div>
+                    <div class="course-info">
+                        <h3 style="color:var(--gold)">${c.name}</h3>
+                        <p>السعر: ${c.price} ج.م</p>
+                        ${currentUser.isAdmin ? `<button class="gold-btn" onclick="toggleCourse(${c.id})">${c.isOpen ? 'إغلاق الكورس' : 'تفعيل للطلاب'}</button>` : ''}
+                        ${!isLocked ? `<button class="gold-btn" style="background:white">مشاهدة الدروس</button>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+    }
+</script>
+</body>
+</html>
