@@ -3,134 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الاسراء التعليمية - الاحترافية</title>
+    <title>أكاديمية الإسراء التعليمية | ميس اسراء فرج</title>
+    <script src="https://jsdelivr.net"></script>
+    <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --black: #050505; --dark: #121212; --gold-dark: #996515; }
-        body { margin: 0; background: var(--black); color: #fff; font-family: 'Segoe UI', Tahoma; user-select: none; }
+        :root { --gold: #D4AF37; --gold-light: #f1c40f; --black: #050505; --dark: #121212; --success: #27ae60; }
+        body { margin: 0; background: var(--black); color: #fff; font-family: 'Cairo', sans-serif; user-select: none; overflow-x: hidden; }
         
+        /* Watermark Protection */
+        #wm-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9999; color: rgba(212, 175, 55, 0.15); font-size: 14px; display: none; }
+
         header { background: var(--dark); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 26px; font-weight: bold; color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+        .logo { font-size: 26px; font-weight: 900; color: var(--gold); text-shadow: 0 0 10px var(--gold); }
 
-        /* واترمارك حماية الفيديو */
-        #watermark { position: absolute; color: rgba(212, 175, 55, 0.3); pointer-events: none; z-index: 9999; font-size: 14px; white-space: nowrap; display: none; }
+        .container { padding: 20px; max-width: 1200px; margin: auto; min-height: 80vh; }
+        .card { background: var(--dark); border: 1px solid #222; border-radius: 20px; padding: 25px; margin-bottom: 20px; border-right: 5px solid var(--gold); }
+        
+        .btn { background: var(--gold); color: #000; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 900; transition: 0.3s; }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); }
+        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
 
-        .btn { background: var(--gold); color: #000; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background: var(--gold-dark); transform: scale(1.05); }
-
-        .container { padding: 20px; max-width: 1100px; margin: auto; }
-        .card { background: var(--dark); border: 1px solid #222; border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; }
-
-        .section { display: none; animation: fadeIn 0.5s; }
-        .active { display: block; }
+        .section { display: none; } .active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* التوقيع الفخم */
-        footer { text-align: center; padding: 60px 20px; border-top: 1px solid #222; }
-        .mrs-esraa { font-size: 45px; color: var(--gold); font-weight: 900; letter-spacing: 2px; }
+        /* Exam Engine */
+        #quiz-screen { display: none; position: fixed; inset: 0; background: var(--black); z-index: 2000; padding: 30px; overflow-y: auto; }
+        .timer { font-size: 24px; color: #e74c3c; font-weight: bold; text-align: center; margin-bottom: 20px; }
+        .option-box { background: #1a1a1a; padding: 15px; border-radius: 10px; margin: 10px 0; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
+        .option-box:hover { border-color: var(--gold); }
+        .option-box.selected { border-color: var(--gold); background: #2b2400; }
+
+        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 10px; font-family: 'Cairo'; }
+        
+        footer { text-align: center; padding: 60px; border-top: 1px solid #222; margin-top: 40px; }
+        .mrs-esraa { font-size: 45px; color: var(--gold); font-weight: 900; text-shadow: 2px 2px 15px #000; }
+        
+        .whatsapp-float { position: fixed; bottom: 20px; left: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; text-decoration: none; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="watermark"></div>
+<div id="wm-layer"></div>
 
 <header>
     <div class="logo">الاسراء التعليمية</div>
-    <div id="nav-btns">
-        <button class="btn" onclick="showPage('home')">الرئيسية</button>
-        <button class="btn" id="profile-btn" style="display:none" onclick="showPage('profile')">ملفي الشخصي</button>
-        <button class="btn" id="admin-btn" style="display:none" onclick="showPage('admin')">لوحة حسام</button>
-        <button class="btn" onclick="logout()">خروج</button>
+    <div style="display:flex; gap:10px;">
+        <button class="btn btn-outline" id="adm-btn" style="display:none" onclick="showPage('admin')">الإدارة</button>
+        <button class="btn" onclick="showPage('profile')">ملفي</button>
+        <button class="btn" style="background:#e74c3c; color:white" onclick="location.reload()">خروج</button>
     </div>
 </header>
 
 <div class="container">
-    <!-- شاشة الدخول -->
+    <!-- الدخول -->
     <div id="auth" class="section active">
-        <div class="card" style="max-width: 450px; margin: 100px auto; text-align: center;">
-            <h2 style="color:var(--gold)">تسجيل الدخول / إنشاء حساب</h2>
-            <input type="text" id="u-name" placeholder="اسمك">
-            <input type="text" id="u-phone" placeholder="رقم هاتفك">
-            <input type="password" id="u-pass" placeholder="كلمة السر">
-            <button class="btn" style="width:100%" onclick="handleAuth()">دخول للمنصة</button>
+        <div class="card" style="max-width: 450px; margin: 80px auto; text-align: center;">
+            <h2 style="color:var(--gold)">تسجيل الدخول للطلاب</h2>
+            <input type="text" id="u-phone" placeholder="رقم الهاتف">
+            <input type="password" id="u-pass" placeholder="كلمة المرور">
+            <button class="btn" style="width:100%" onclick="handleAuth()">دخول المنصة 🔐</button>
         </div>
     </div>
 
-    <!-- لوحة الأدمن حسام -->
-    <div id="admin" class="section">
-        <h1 style="color:var(--gold)">لوحة التحكم الإدارية</h1>
-        <div class="card">
-            <h3>إضافة كورس جديد</h3>
-            <input type="text" id="new-c-name" placeholder="اسم الكورس">
-            <input type="number" id="new-c-price" placeholder="السعر">
-            <button class="btn" onclick="createNewCourse()">إنشاء الكورس</button>
-        </div>
-        <div class="card">
-            <h3>إضافة درس + امتحان</h3>
-            <select id="select-course"></select>
-            <input type="text" id="lesson-title" placeholder="عنوان الدرس">
-            <input type="text" id="video-link" placeholder="رابط فيديو (يوتيوب/درايف)">
-            <textarea id="quiz-data" placeholder="الامتحان بصيغة: السؤال|إجابة1,إجابة2,إجابة3|الإجابة الصحيحة"></textarea>
-            <button class="btn" onclick="addFullLesson()">حفظ الدرس والامتحان</button>
-        </div>
-        <div id="students-list"></div>
-    </div>
-
-    <!-- الملف الشخصي للطالب -->
+    <!-- الملف الشخصي -->
     <div id="profile" class="section">
-        <h1 style="color:var(--gold)">ملفك الشخصي 🎓</h1>
-        <div id="student-data" class="card"></div>
-        <h3>كورساتي المشترك بها:</h3>
-        <div id="my-courses-list"></div>
+        <div class="card">
+            <h1>أهلاً بك، <span id="u-name-display" style="color:var(--gold)"></span> 👋</h1>
+            <p>رصيدك من النقاط: <span id="u-pts">0</span> 🪙</p>
+        </div>
+        <h3>📚 كورساتك المفعلة والمتاحة</h3>
+        <div id="courses-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;"></div>
     </div>
 
-    <!-- منطقة عرض الكورس والدروس -->
-    <div id="course-view" class="section">
-        <button class="btn" onclick="showPage('profile')">🔙 العودة</button>
-        <h2 id="view-c-title" style="color:var(--gold)"></h2>
-        <div id="lessons-container"></div>
+    <!-- الإدارة -->
+    <div id="admin" class="section">
+        <h1 style="color:var(--gold)">لوحة تحكم حسام</h1>
+        <div class="card">
+            <h3>نشر درس جديد</h3>
+            <select id="sel-c"></select>
+            <input type="text" id="l-title" placeholder="عنوان الدرس">
+            <input type="text" id="l-vid" placeholder="رابط فيديو (يوتيوب)">
+            <input type="text" id="l-pdf" placeholder="رابط PDF الملزمة">
+            <textarea id="l-text" placeholder="اكتب شرح الدرس المكتوب هنا..." rows="4"></textarea>
+            <textarea id="l-quiz" placeholder="سؤال|خيار1,خيار2,خيار3|إجابة1|رابط صورة(اختياري)" rows="4"></textarea>
+            <button class="btn" onclick="addLesson()">نشر الدرس للطلاب ✅</button>
+        </div>
+        <div class="card">
+            <h3>إدارة الطلاب وطلبات الاشتراك</h3>
+            <div id="students-list"></div>
+        </div>
+    </div>
+
+    <!-- عرض الدرس -->
+    <div id="lesson-view" class="section">
+        <button class="btn btn-outline" onclick="showPage('profile')" style="margin-bottom:20px">🔙 عودة</button>
+        <h2 id="view-title" style="color:var(--gold)"></h2>
+        <div id="vid-cont" style="border-radius:20px; overflow:hidden; border:2px solid var(--gold)"></div>
+        <div class="card" style="margin-top:20px">
+            <h3>📜 ملاحظات الدرس</h3>
+            <div id="view-text" style="white-space: pre-wrap; line-height:1.8"></div>
+            <div id="view-pdf" style="margin-top:20px"></div>
+            <button class="btn" style="width:100%; background:var(--success); color:white; margin-top:20px" onclick="startExam()">ابدأ الامتحان الإلكتروني 📝</button>
+        </div>
     </div>
 </div>
 
-<footer>
-    <div class="mrs-esraa">ميس اسراء فرج</div>
-</footer>
+<!-- محرك الامتحانات -->
+<div id="quiz-screen">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 id="quiz-header" style="color:var(--gold)"></h2>
+        <div class="timer">⏰ <span id="time-left">00:00</span></div>
+    </div>
+    <div id="quiz-body" class="card" style="max-width:800px; margin:auto"></div>
+</div>
+
+<a href="https://wa.me" class="whatsapp-float" target="_blank">📱</a>
+
+<footer><div class="mrs-esraa">ميس اسراء فرج</div></footer>
 
 <script>
-    const ADMIN_PHONE = "01040672314";
-    let users = JSON.parse(localStorage.getItem('es_users')) || [];
-    let courses = JSON.parse(localStorage.getItem('es_courses')) || [];
+    const ADMIN_INFO = { p: "01040672314", s: "01040672314" };
+    let users = JSON.parse(localStorage.getItem('es_final_users')) || [];
+    let courses = JSON.parse(localStorage.getItem('es_final_courses')) || [{id:1, name:"اللغة العربية للثانوية العامة", price: 350, lessons:[]}];
     let currentUser = null;
 
     function handleAuth() {
-        const name = document.getElementById('u-name').value;
-        const phone = document.getElementById('u-phone').value;
-        const pass = document.getElementById('u-pass').value;
-
-        if(!name || !phone) return;
-
-        let user = users.find(u => u.phone === phone);
-        if(!user) {
-            user = { name, phone, pass, isAdmin: (phone === ADMIN_PHONE), active: (phone === ADMIN_PHONE), myCourses: [], results: [] };
-            users.push(user);
-            localStorage.setItem('es_users', JSON.stringify(users));
+        const p = document.getElementById('u-phone').value;
+        const s = document.getElementById('u-pass').value;
+        if(p === ADMIN_INFO.p && s === ADMIN_INFO.s) {
+            currentUser = { name: "حسام", phone: p, isAdmin: true, active: true, myCourses: [] };
+        } else {
+            let u = users.find(x => x.phone === p && x.pass === s);
+            if(!u) {
+                u = { name: "طالب جديد", phone: p, pass: s, active: false, myCourses: [], points: 0 };
+                users.push(u); save(); return alert("تم التسجيل.. بانتظار تفعيل الأدمن حسام");
+            }
+            if(!u.active) return alert("حسابك بانتظار تفعيل الاشتراك");
+            currentUser = u;
         }
-
-        if(user.pass !== pass) return alert("كلمة السر خطأ");
-        if(!user.active) return alert("حسابك بانتظار تفعيل ميس اسراء");
-
-        currentUser = user;
-        loginSuccess();
+        if(currentUser.isAdmin) document.getElementById('adm-btn').style.display = 'inline';
+        startWM();
+        showPage('profile');
     }
 
-    function loginSuccess() {
-        document.getElementById('auth').classList.remove('active');
-        document.getElementById('profile-btn').style.display = 'inline';
-        if(currentUser.isAdmin) document.getElementById('admin-btn').style.display = 'inline';
-        
-        startWatermark();
-        showPage('profile');
+    function startWM() {
+        const wm = document.getElementById('wm-layer');
+        wm.style.display = 'block';
+        wm.innerText = `${currentUser.name} - ${currentUser.phone} `.repeat(100);
+        setInterval(() => {
+            wm.style.paddingTop = Math.random() * 50 + "px";
+            wm.style.paddingLeft = Math.random() * 50 + "px";
+        }, 2000);
     }
 
     function showPage(id) {
@@ -140,91 +163,106 @@
         if(id === 'admin') renderAdmin();
     }
 
-    // وظائف الأدمن
-    function createNewCourse() {
-        const name = document.getElementById('new-c-name').value;
-        const price = document.getElementById('new-c-price').value;
-        courses.push({ id: Date.now(), name, price, lessons: [] });
-        saveData();
-        renderAdmin();
-    }
-
-    function addFullLesson() {
-        const cId = document.getElementById('select-course').value;
-        const title = document.getElementById('lesson-title').value;
-        const video = document.getElementById('video-link').value;
-        const quiz = document.getElementById('quiz-data').value;
-
-        const course = courses.find(c => c.id == cId);
-        course.lessons.push({ title, video, quiz });
-        saveData();
-        alert("تمت إضافة الدرس بنجاح");
-    }
-
-    function renderAdmin() {
-        const sel = document.getElementById('select-course');
-        sel.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        
-        const sList = document.getElementById('students-list');
-        sList.innerHTML = "<h3>الطلاب (تفعيل/تعطيل):</h3>" + users.map(u => `
-            <div class="card">${u.name} - ${u.phone} 
-                <button onclick="activateUser('${u.phone}')">${u.active ? 'إيقاف' : 'تفعيل'}</button>
-                <button onclick="addCourseToUser('${u.phone}')">+ إضافة كورس</button>
-            </div>
-        `).join('');
-    }
-
-    function activateUser(phone) {
-        let u = users.find(x => x.phone === phone);
-        u.active = !u.active;
-        saveData(); renderAdmin();
-    }
-
-    function addCourseToUser(phone) {
-        let cId = prompt("أدخل كود الكورس (موجود في بيانات الكورس)");
-        let u = users.find(x => x.phone === phone);
-        if(!u.myCourses.includes(cId)) u.myCourses.push(cId);
-        saveData(); alert("تم تفعيل الكورس للطالب");
-    }
-
     function renderProfile() {
-        document.getElementById('student-data').innerHTML = `الاسم: ${currentUser.name} <br> الهاتف: ${currentUser.phone}`;
-        const myList = document.getElementById('my-courses-list');
-        myList.innerHTML = courses.filter(c => currentUser.myCourses.includes(String(c.id)) || currentUser.isAdmin).map(c => `
-            <div class="card" onclick="viewCourse(${c.id})">${c.name} (اضغط للدخول)</div>
-        `).join('');
+        document.getElementById('u-name-display').innerText = currentUser.name;
+        const grid = document.getElementById('courses-grid');
+        grid.innerHTML = courses.map(c => {
+            const isPaid = currentUser.myCourses.includes(String(c.id)) || currentUser.isAdmin;
+            return `
+                <div class="card" style="border-color:${isPaid?'var(--success)':'var(--gold)'}">
+                    <h3>${c.name}</h3>
+                    <p>السعر: ${c.price} ج.م</p>
+                    ${isPaid ? `<button class="btn" onclick="openCourse(${c.id})">فتح المحتوى ▶️</button>` : 
+                    `<button class="btn btn-outline" onclick="requestPay('${c.name}', ${c.price})">طلب اشتراك 💳</button>`}
+                </div>
+            `;
+        }).join('');
     }
 
-    function viewCourse(id) {
-        const course = courses.find(c => c.id == id);
-        showPage('course-view');
-        document.getElementById('view-c-title').innerText = course.name;
-        document.getElementById('lessons-container').innerHTML = course.lessons.map((l, i) => `
-            <div class="card">
+    function requestPay(cName, price) {
+        const msg = `أهلاً أدمن حسام، أريد تفعيل كورس ${cName}. رقمي: ${currentUser.phone}`;
+        window.open(`https://wa.me?text=${encodeURIComponent(msg)}`);
+        alert(`للتفعيل:\n1. حول ${price} ج.م على 01040672314 (فودافون كاش أو انستا باي)\n2. ارسل اسكرين الشحن في الواتساب المفتوح أمامك.`);
+    }
+
+    function openCourse(id) {
+        const c = courses.find(x => x.id == id);
+        document.getElementById('courses-grid').innerHTML = `<h2>دروس الكورس</h2>` + c.lessons.map((l, i) => `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center">
                 <h4>${i+1}. ${l.title}</h4>
-                <iframe width="100%" height="315" src="${l.video.replace('watch?v=', 'embed/')}" frameborder="0" allowfullscreen></iframe>
-                <button class="btn" onclick="startQuiz('${id}', ${i})">ابدأ الامتحان</button>
+                <button class="btn" onclick="viewLesson(${id}, ${i})">بدء الدرس</button>
             </div>
         `).join('');
     }
 
-    // نظام الواترمارك المتحرك
-    function startWatermark() {
-        const wm = document.getElementById('watermark');
-        wm.style.display = 'block';
-        wm.innerText = currentUser.phone + " - " + currentUser.name;
-        setInterval(() => {
-            wm.style.top = Math.random() * 80 + "%";
-            wm.style.left = Math.random() * 80 + "%";
-        }, 3000);
+    let activeL = null;
+    function viewLesson(cId, lIdx) {
+        activeL = courses.find(c => c.id == cId).lessons[lIdx];
+        showPage('lesson-view');
+        document.getElementById('view-title').innerText = activeL.title;
+        document.getElementById('view-text').innerText = activeL.text;
+        document.getElementById('vid-cont').innerHTML = `<iframe width="100%" height="400" src="${activeL.vid.replace('watch?v=','embed/')}" frameborder="0" allowfullscreen></iframe>`;
+        document.getElementById('view-pdf').innerHTML = activeL.pdf ? `<a href="${activeL.pdf}" target="_blank" class="btn btn-outline">📄 ملزمة الدرس PDF</a>` : '';
     }
 
-    function saveData() {
-        localStorage.setItem('es_users', JSON.stringify(users));
-        localStorage.setItem('es_courses', JSON.stringify(courses));
+    function startExam() {
+        if(!activeL.quiz || activeL.quiz.length === 0) return alert("لا يوجد امتحان لهذا الدرس");
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.getElementById('quiz-header').innerText = activeL.title;
+        let qBody = document.getElementById('quiz-body');
+        qBody.innerHTML = activeL.quiz.map((q, i) => `
+            <div style="margin-bottom:30px">
+                <h4>${i+1}. ${q.q}</h4>
+                ${q.img ? `<img src="${q.img}" style="max-width:100%; border-radius:10px; margin:10px 0">` : ''}
+                ${q.opts.map(opt => `<div class="option-box" onclick="this.parentElement.querySelectorAll('.option-box').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); this.dataset.ans='${opt}'">${opt}</div>`).join('')}
+            </div>
+        `).join('') + `<button class="btn" style="width:100%" onclick="submitQuiz()">تسليم الإجابات</button>`;
     }
 
-    function logout() { location.reload(); }
+    function submitQuiz() {
+        let score = 0;
+        activeL.quiz.forEach((q, i) => {
+            const selected = document.querySelectorAll('.option-box.selected')[i];
+            if(selected && selected.dataset.ans === q.ans) score++;
+        });
+        confetti({ particleCount: 150, spread: 70 });
+        alert(`تم التسليم! درجتك: ${score} من ${activeL.quiz.length}`);
+        document.getElementById('quiz-screen').style.display = 'none';
+    }
+
+    // الإدارة
+    function renderAdmin() {
+        document.getElementById('sel-c').innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        document.getElementById('students-list').innerHTML = users.map(u => `
+            <div class="card" style="display:flex; justify-content:space-between">
+                <span>${u.name} (${u.phone})</span>
+                <div>
+                    <button class="btn" onclick="toggleU('${u.phone}')">${u.active?'إيقاف':'تفعيل'}</button>
+                    <button class="btn btn-outline" onclick="addC('${u.phone}')">+ كورس</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addLesson() {
+        const cId = document.getElementById('sel-c').value;
+        const quiz = document.getElementById('l-quiz').value.split('\n').map(line => {
+            const p = line.split('|');
+            return { q: p[0], opts: p[1].split(','), ans: p[2], img: p[3] || null };
+        });
+        courses.find(c => c.id == cId).lessons.push({
+            title: document.getElementById('l-title').value,
+            vid: document.getElementById('l-vid').value,
+            pdf: document.getElementById('l-pdf').value,
+            text: document.getElementById('l-text').value,
+            quiz: quiz
+        });
+        save(); alert("تم النشر!");
+    }
+
+    function toggleU(p) { let u = users.find(x => x.phone === p); u.active = !u.active; save(); renderAdmin(); }
+    function addC(p) { let cid = prompt("كود الكورس؟ (1 للأساسي)"); users.find(x => x.phone === p).myCourses.push(cid); save(); }
+    function save() { localStorage.setItem('es_final_users', JSON.stringify(users)); localStorage.setItem('es_final_courses', JSON.stringify(courses)); }
 </script>
 </body>
 </html>
