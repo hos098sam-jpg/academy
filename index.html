@@ -7,52 +7,30 @@
     <script src="https://jsdelivr.net"></script>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --black: #050505; --dark: #121212; --text: #f0f0f0; --success: #27ae60; }
+        :root { --gold: #D4AF37; --black: #050505; --dark: #121212; --text: #f0f0f0; --danger: #e74c3c; }
         body { margin: 0; background: var(--black); color: var(--text); font-family: 'Cairo', sans-serif; user-select: none; }
-        
-        /* الهيدر والقائمة الجانبية */
         header { background: var(--dark); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
         .menu-icon { font-size: 30px; color: var(--gold); cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        .logo { font-size: 24px; font-weight: 900; color: var(--gold); text-shadow: 0 0 10px rgba(212,175,55,0.3); }
-
+        .logo { font-size: 24px; font-weight: 900; color: var(--gold); }
         .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: var(--dark); overflow-x: hidden; transition: 0.5s; padding-top: 60px; border-left: 2px solid var(--gold); }
-        .sidenav a { padding: 15px 30px; text-decoration: none; font-size: 20px; color: var(--text); display: block; transition: 0.3s; border-bottom: 1px solid #222; }
-        .sidenav a:hover { background: var(--gold); color: black; }
+        .sidenav a { padding: 15px 30px; text-decoration: none; font-size: 20px; color: var(--text); display: block; border-bottom: 1px solid #222; }
         .sidenav .closebtn { position: absolute; top: 10px; left: 25px; font-size: 36px; color: var(--gold); }
-
         .container { padding: 20px; max-width: 1200px; margin: auto; min-height: 80vh; }
         .section { display: none; } .active-section { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* الكورسات */
         .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
-        .course-card { background: var(--dark); border-radius: 20px; overflow: hidden; border: 1px solid #333; transition: 0.3s; position: relative; }
-        .course-card:hover { border-color: var(--gold); transform: translateY(-10px); }
+        .course-card { background: var(--dark); border-radius: 20px; overflow: hidden; border: 1px solid #333; transition: 0.3s; }
         .course-img { width: 100%; height: 170px; object-fit: cover; border-bottom: 2px solid var(--gold); }
-        .course-info { padding: 20px; text-align: center; }
-
-        .btn { background: var(--gold); color: black; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); }
-        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); width: 100%; margin-top: 10px; }
-
-        /* منطقة الفيديو والحماية */
+        .btn { background: var(--gold); color: black; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        .btn-danger { background: var(--danger); color: white; padding: 5px 15px; font-size: 14px; }
         #vid-cont { position: relative; border-radius: 20px; overflow: hidden; border: 2px solid var(--gold); background: #000; }
-        #wm-layer { position: absolute; z-index: 99; pointer-events: none; color: rgba(212, 175, 55, 0.2); font-weight: bold; font-size: 16px; display: none; white-space: nowrap; }
-
-        /* الامتحانات */
-        #quiz-screen { display: none; position: fixed; inset: 0; background: var(--black); z-index: 3000; padding: 30px; overflow-y: auto; }
-        .option-box { background: #1a1a1a; padding: 15px; border-radius: 10px; margin: 10px 0; border: 1px solid #333; cursor: pointer; }
-        .option-box.selected { border-color: var(--gold); background: #2b2400; }
-
-        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; font-family: 'Cairo'; }
+        #wm-layer { position: absolute; z-index: 99; pointer-events: none; color: rgba(212, 175, 55, 0.2); font-weight: bold; display: none; }
         footer { text-align: center; padding: 60px; border-top: 1px solid #222; margin-top: 40px; }
-        .mrs-esraa { font-size: 40px; color: var(--gold); font-weight: 900; text-shadow: 2px 2px 10px #000; }
-        .whatsapp-float { position: fixed; bottom: 20px; left: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; text-decoration: none; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .mrs-esraa { font-size: 40px; color: var(--gold); font-weight: 900; }
+        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<!-- القائمة الجانبية -->
 <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div id="guest-links">
@@ -67,20 +45,18 @@
 </div>
 
 <header>
-    <div class="menu-icon" onclick="openNav()">&#9776; <span style="font-size:16px">القائمة</span></div>
+    <div class="menu-icon" onclick="openNav()">&#9776; القائمة</div>
     <div class="logo">الاسراء التعليمية</div>
 </header>
 
 <div class="container">
-    <!-- الصفحة الرئيسية: الكورسات المتاحة -->
     <div id="home" class="section active-section">
-        <h1 style="color:var(--gold); border-right: 5px solid var(--gold); padding-right: 15px;">الكورسات المتاحة</h1>
+        <h1 style="color:var(--gold)">الكورسات المتاحة</h1>
         <div id="public-grid" class="courses-grid"></div>
     </div>
 
-    <!-- تسجيل الدخول -->
     <div id="login" class="section">
-        <div class="card" style="max-width:400px; margin:50px auto;">
+        <div class="card" style="max-width:400px; margin:auto; background:var(--dark); padding:30px; border-radius:20px; border:1px solid var(--gold);">
             <h2 style="color:var(--gold); text-align:center">تسجيل الدخول</h2>
             <input type="text" id="log-phone" placeholder="رقم الموبايل">
             <input type="password" id="log-pass" placeholder="كلمة السر">
@@ -88,75 +64,55 @@
         </div>
     </div>
 
-    <!-- إنشاء حساب -->
     <div id="register" class="section">
-        <div class="card" style="max-width:400px; margin:50px auto;">
-            <h2 style="color:var(--gold); text-align:center">إنشاء حساب جديد</h2>
+        <div class="card" style="max-width:400px; margin:auto; background:var(--dark); padding:30px; border-radius:20px; border:1px solid var(--gold);">
+            <h2 style="color:var(--gold); text-align:center">حساب جديد</h2>
             <input type="text" id="reg-name" placeholder="اسم الطالب">
             <input type="text" id="reg-phone" placeholder="رقم الهاتف">
             <input type="password" id="reg-pass" placeholder="كلمة السر">
-            <button class="btn" style="width:100%" onclick="register()">إنشاء الحساب</button>
+            <button class="btn" style="width:100%" onclick="register()">إنشاء</button>
         </div>
     </div>
 
-    <!-- لوحة الأدمن (حسام) -->
     <div id="admin" class="section">
         <h1 style="color:var(--gold)">لوحة تحكم حسام</h1>
-        <div class="card">
+        <div class="card" style="background:#111; padding:20px; border-radius:15px; margin-bottom:20px">
             <h3>إضافة كورس جديد</h3>
             <input type="text" id="c-name" placeholder="اسم الكورس">
             <input type="text" id="c-img" placeholder="رابط صورة الكورس">
             <input type="number" id="c-price" placeholder="السعر">
-            <button class="btn" onclick="addCourse()">إضافة الكورس</button>
+            <button class="btn" onclick="addCourse()">إضافة</button>
         </div>
-        <div class="card">
-            <h3>نشر درس جديد</h3>
+        <div class="card" style="background:#111; padding:20px; border-radius:15px;">
+            <h3>نشر درس جديد (إضافة دروس بلا حدود)</h3>
             <select id="sel-c-target"></select>
             <input type="text" id="l-title" placeholder="عنوان الدرس">
             <input type="text" id="l-vid" placeholder="رابط يوتيوب">
-            <input type="text" id="l-pdf" placeholder="رابط PDF">
-            <textarea id="l-text" placeholder="شرح الدرس المكتوب..." rows="3"></textarea>
-            <textarea id="l-quiz" placeholder="سؤال|خيار1,خيار2|إجابة|رابط صورة" rows="3"></textarea>
-            <button class="btn" onclick="addLesson()">نشر الدرس</button>
+            <textarea id="l-text" placeholder="شرح الدرس المكتوب..."></textarea>
+            <button class="btn" onclick="addLesson()">نشر الدرس داخل الكورس</button>
         </div>
-        <div id="admin-students"></div>
+        <div id="manage-area" style="margin-top:30px">
+            <h3>إدارة الكورسات الحالية:</h3>
+            <div id="admin-courses-list" class="courses-grid"></div>
+        </div>
+        <div id="admin-students" style="margin-top:30px"></div>
     </div>
 
-    <!-- عرض الدرس -->
     <div id="lesson-view" class="section">
-        <button class="btn btn-outline" onclick="showPage('home')" style="width:auto; margin-bottom:20px">🔙 عودة</button>
+        <button class="btn" onclick="showPage('home')" style="margin-bottom:20px">🔙 عودة</button>
         <h2 id="view-l-title" style="color:var(--gold)"></h2>
-        <div id="vid-cont">
-            <div id="wm-layer"></div>
-            <div id="player-frame"></div>
-        </div>
-        <div class="card" style="margin-top:20px">
-            <h3>📜 ملاحظات الدرس</h3>
-            <div id="view-l-text" style="white-space: pre-wrap; line-height:1.8"></div>
-            <div id="view-l-pdf" style="margin-top:20px"></div>
-            <button class="btn" style="background:var(--success); color:white; margin-top:20px" onclick="startExam()">ابدأ الامتحان الإلكتروني 📝</button>
-        </div>
+        <div id="vid-cont"><div id="wm-layer"></div><div id="player-frame"></div></div>
+        <div id="view-l-text" style="padding:20px; line-height:1.8; background:#111; border-radius:15px; margin-top:20px"></div>
     </div>
 </div>
 
-<div id="quiz-screen">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-        <h2 id="quiz-title" style="color:var(--gold)">الامتحان</h2>
-        <button class="btn" style="background:#e74c3c; color:white" onclick="document.getElementById('quiz-screen').style.display='none'">إغلاق</button>
-    </div>
-    <div id="quiz-body"></div>
-</div>
-
-<a href="https://wa.me" class="whatsapp-float" target="_blank">📱</a>
 <footer><div class="mrs-esraa">ميس اسراء فرج</div></footer>
 
 <script>
     const ADMIN_DATA = { p: "01040672314", s: "01040672314" };
-    let users = JSON.parse(localStorage.getItem('es_final_v8_users')) || [];
-    let courses = JSON.parse(localStorage.getItem('es_final_v8_courses')) || [{id:1, name:"اللغة العربية التأسيسية", price: 350, img:"https://placeholder.com", lessons:[]}];
+    let users = JSON.parse(localStorage.getItem('es_v9_users')) || [];
+    let courses = JSON.parse(localStorage.getItem('es_v9_courses')) || [];
     let currentUser = null;
-    let activeLesson = null;
-    let wmInterval;
 
     function openNav() { document.getElementById("mySidenav").style.width = "280px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
@@ -171,76 +127,63 @@
 
     function renderPublic() {
         const grid = document.getElementById('public-grid');
-        grid.innerHTML = courses.map(c => {
-            const isPaid = currentUser && (currentUser.isAdmin || currentUser.myCourses.includes(String(c.id)));
-            return `
-                <div class="course-card">
-                    <img src="${c.img}" class="course-img">
-                    <div class="course-info">
-                        <h3>${c.name}</h3>
-                        <p>السعر: ${c.price} ج.م</p>
-                        ${isPaid ? `<button class="btn" onclick="openCourse(${c.id})">فتح الدروس ▶️</button>` : `<button class="btn" onclick="${currentUser?'requestPay('+c.id+')':'showPage(\'login\')'}">اشترك الآن 💳</button>`}
-                    </div>
+        grid.innerHTML = courses.map(c => `
+            <div class="course-card">
+                <img src="${c.img || 'https://placeholder.com'}" class="course-img">
+                <div style="padding:15px; text-align:center">
+                    <h3>${c.name}</h3>
+                    <p>السعر: ${c.price} ج.م</p>
+                    <button class="btn" onclick="openCourse(${c.id})">دخول الكورس</button>
                 </div>
-            `;
-        }).join('');
-    }
-
-    function requestPay(id) {
-        const c = courses.find(x => x.id == id);
-        window.open(`https://wa.me?text=أريد تفعيل كورس ${c.name}. رقمي: ${currentUser.phone}`);
-        alert("حول المبلغ لـ 01040672314 وارسل سكرين واتساب.");
-    }
-
-    function openCourse(id) {
-        const c = courses.find(x => x.id == id);
-        document.getElementById('public-grid').innerHTML = `<h2>دروس الكورس</h2>` + c.lessons.map((l, i) => `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center">
-                <h4>${i+1}. ${l.title}</h4>
-                <button class="btn" onclick="viewLesson(${id}, ${i})">بدء</button>
             </div>
         `).join('');
     }
 
-    function viewLesson(cId, lIdx) {
-        activeLesson = courses.find(c => c.id == cId).lessons[lIdx];
-        showPage('lesson-view');
-        document.getElementById('view-l-title').innerText = activeLesson.title;
-        document.getElementById('view-l-text').innerText = activeLesson.text;
-        document.getElementById('player-frame').innerHTML = `<iframe width="100%" height="400" src="${activeLesson.vid.replace('watch?v=','embed/')}" frameborder="0" allowfullscreen></iframe>`;
-        document.getElementById('view-l-pdf').innerHTML = activeLesson.pdf ? `<a href="${activeLesson.pdf}" target="_blank" class="btn btn-outline">📄 ملزمة الدرس PDF</a>` : '';
-        startWM();
+    function addCourse() {
+        const name = document.getElementById('c-name').value;
+        const img = document.getElementById('c-img').value;
+        const price = document.getElementById('c-price').value;
+        courses.push({ id: Date.now(), name, img, price, lessons: [] });
+        save(); renderAdmin(); renderPublic();
     }
 
-    function startWM() {
-        const wm = document.getElementById('wm-layer');
-        wm.style.display = 'block';
-        wm.innerText = currentUser.phone;
-        if(wmInterval) clearInterval(wmInterval);
-        wmInterval = setInterval(() => {
-            const cont = document.getElementById('vid-cont');
-            wm.style.left = Math.random() * (cont.clientWidth - 100) + "px";
-            wm.style.top = Math.random() * (cont.clientHeight - 30) + "px";
-        }, 3000);
+    function deleteCourse(id) {
+        if(confirm("هل أنت متأكد من حذف الكورس نهائياً؟")) {
+            courses = courses.filter(c => c.id !== id);
+            save(); renderAdmin(); renderPublic();
+        }
     }
 
-    function register() {
-        const n = document.getElementById('reg-name').value, p = document.getElementById('reg-phone').value, s = document.getElementById('reg-pass').value;
-        if(!n || !p || !s) return alert("اكمل البيانات");
-        users.push({ name: n, phone: p, pass: s, active: false, myCourses: [] });
-        save(); alert("تم التسجيل! بانتظار تفعيل حسام");
-        showPage('login');
+    function addLesson() {
+        const cId = document.getElementById('sel-c-target').value;
+        const title = document.getElementById('l-title').value;
+        const vid = document.getElementById('l-vid').value;
+        const text = document.getElementById('l-text').value;
+        const course = courses.find(c => c.id == cId);
+        course.lessons.push({ title, vid, text });
+        save(); alert("تم إضافة الدرس بنجاح!");
+    }
+
+    function renderAdmin() {
+        document.getElementById('sel-c-target').innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        const cList = document.getElementById('admin-courses-list');
+        cList.innerHTML = courses.map(c => `
+            <div class="course-card" style="padding:10px; text-align:center">
+                <h4>${c.name}</h4>
+                <button class="btn-danger" onclick="deleteCourse(${c.id})">حذف الكورس 🗑️</button>
+            </div>
+        `).join('');
     }
 
     function login() {
-        const p = document.getElementById('log-phone').value, s = document.getElementById('log-pass').value;
+        const p = document.getElementById('log-phone').value;
+        const s = document.getElementById('log-pass').value;
         if(p === ADMIN_DATA.p && s === ADMIN_DATA.s) {
             currentUser = { name: "حسام", isAdmin: true, phone: p };
             document.getElementById('admin-link').style.display = 'block';
         } else {
             let u = users.find(x => x.phone === p && x.pass === s);
-            if(!u) return alert("بيانات خطأ");
-            if(!u.active) return alert("حسابك بانتظار التفعيل");
+            if(!u || !u.active) return alert("خطأ أو الحساب غير مفعل");
             currentUser = u;
         }
         document.getElementById('guest-links').style.display = 'none';
@@ -248,57 +191,31 @@
         showPage('home');
     }
 
-    function addCourse() {
-        courses.push({ id: Date.now(), name: document.getElementById('c-name').value, img: document.getElementById('c-img').value || "https://placeholder.com", price: document.getElementById('c-price').value, lessons: [] });
-        save(); showPage('home');
-    }
-
-    function addLesson() {
-        const cId = document.getElementById('sel-c-target').value;
-        const quiz = document.getElementById('l-quiz').value.split('\n').map(line => {
-            const p = line.split('|');
-            return { q: p[0], opts: p[1].split(','), ans: p[2], img: p[3] || null };
-        });
-        courses.find(c => c.id == cId).lessons.push({ title: document.getElementById('l-title').value, vid: document.getElementById('l-vid').value, pdf: document.getElementById('l-pdf').value, text: document.getElementById('l-text').value, quiz });
-        save(); alert("تم النشر");
-    }
-
-    function renderAdmin() {
-        document.getElementById('sel-c-target').innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        document.getElementById('admin-students').innerHTML = "<h3>الطلاب:</h3>" + users.map(u => `
-            <div class="card" style="display:flex; justify-content:space-between">
-                <span>${u.name} (${u.phone})</span>
-                <div><button onclick="toggleU('${u.phone}')">${u.active?'إيقاف':'تفعيل'}</button> <button onclick="addCT('${u.phone}')">+ كورس</button></div>
+    function openCourse(id) {
+        if(!currentUser) return showPage('login');
+        const c = courses.find(x => x.id == id);
+        document.getElementById('public-grid').innerHTML = `<h2>دروس الكورس</h2>` + c.lessons.map((l, i) => `
+            <div style="background:#111; padding:15px; margin-bottom:10px; border-radius:10px; display:flex; justify-content:space-between">
+                <span>الدرس ${i+1}: ${l.title}</span>
+                <button class="btn" onclick="viewLesson(${id}, ${i})">بدء</button>
             </div>
         `).join('');
     }
 
-    function toggleU(p) { let u = users.find(x => x.phone === p); u.active = !u.active; save(); renderAdmin(); }
-    function addCT(p) { let id = prompt("كود الكورس؟ (1)"); users.find(x => x.phone === p).myCourses.push(id); save(); }
-    function save() { localStorage.setItem('es_final_v8_users', JSON.stringify(users)); localStorage.setItem('es_final_v8_courses', JSON.stringify(courses)); }
-    
-    function startExam() {
-        if(!activeLesson.quiz.length) return alert("لا يوجد امتحان");
-        document.getElementById('quiz-screen').style.display = 'block';
-        document.getElementById('quiz-body').innerHTML = activeLesson.quiz.map((q, i) => `
-            <div class="card">
-                <h4>${i+1}. ${q.q}</h4>
-                ${q.img ? `<img src="${q.img}" style="max-width:100%; border-radius:10px; margin-bottom:10px">` : ''}
-                ${q.opts.map(opt => `<div class="option-box" onclick="this.parentElement.querySelectorAll('.option-box').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); this.dataset.ans='${opt}'">${opt}</div>`).join('')}
-            </div>
-        `).join('') + `<button class="btn" onclick="submitQuiz()">تسليم</button>`;
+    function viewLesson(cId, lIdx) {
+        const lesson = courses.find(c => c.id == cId).lessons[lIdx];
+        showPage('lesson-view');
+        document.getElementById('view-l-title').innerText = lesson.title;
+        document.getElementById('view-l-text').innerText = lesson.text;
+        document.getElementById('player-frame').innerHTML = `<iframe width="100%" height="400" src="${lesson.vid.replace('watch?v=','embed/')}"></iframe>`;
     }
 
-    function submitQuiz() {
-        let score = 0;
-        activeLesson.quiz.forEach((q, i) => {
-            const sel = document.querySelectorAll('#quiz-body .card')[i].querySelector('.option-box.selected');
-            if(sel && sel.dataset.ans === q.ans) score++;
-        });
-        confetti(); alert(`درجتك: ${score} من ${activeLesson.quiz.length}`);
-        document.getElementById('quiz-screen').style.display = 'none';
+    function register() {
+        users.push({ name: document.getElementById('reg-name').value, phone: document.getElementById('reg-phone').value, pass: document.getElementById('reg-pass').value, active: false });
+        save(); alert("تم! بانتظار تفعيل حسام"); showPage('login');
     }
 
+    function save() { localStorage.setItem('es_v9_users', JSON.stringify(users)); localStorage.setItem('es_v9_courses', JSON.stringify(courses)); }
     renderPublic();
 </script>
 </body>
