@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أكاديمية الإسراء التعليمية | ميس اسراء فرج</title>
-    <!-- مكتبات Firebase الأساسية -->
+    <!-- مكتبات Firebase -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <script src="https://jsdelivr.net"></script>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --black: #050505; --dark: #121212; --text: #f0f0f0; --success: #27ae60; }
+        :root { --gold: #D4AF37; --black: #050505; --dark: #121212; --text: #f0f0f0; }
         body { margin: 0; background: var(--black); color: var(--text); font-family: 'Cairo', sans-serif; user-select: none; }
         header { background: var(--dark); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
         .menu-icon { font-size: 30px; color: var(--gold); cursor: pointer; }
@@ -18,7 +18,7 @@
         .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: var(--dark); overflow-x: hidden; transition: 0.5s; padding-top: 60px; border-left: 2px solid var(--gold); }
         .sidenav a { padding: 15px 30px; text-decoration: none; font-size: 20px; color: var(--text); display: block; border-bottom: 1px solid #222; }
         .container { padding: 20px; max-width: 1200px; margin: auto; min-height: 80vh; }
-        .section { display: none; } .active-section { display: block; animation: fadeIn 0.5s; }
+        .section { display: none; } .active-section { display: block; }
         .card { background: var(--dark); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
         .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
         .btn { background: var(--gold); color: black; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
@@ -51,7 +51,7 @@
 <div class="container">
     <div id="home" class="section active-section">
         <h1 style="color:var(--gold)">الكورسات المتاحة</h1>
-        <div id="public-grid" class="courses-grid">جاري تحميل البيانات...</div>
+        <div id="public-grid" class="courses-grid">جاري الاتصال بقاعدة البيانات...</div>
     </div>
 
     <div id="login" class="section">
@@ -59,7 +59,7 @@
             <h2 style="text-align:center; color:var(--gold)">تسجيل الدخول</h2>
             <input type="text" id="log-phone" placeholder="رقم الموبايل">
             <input type="password" id="log-pass" placeholder="كلمة السر">
-            <button class="btn" onclick="login()">دخول</button>
+            <button class="btn" style="width:100%" onclick="login()">دخول</button>
         </div>
     </div>
 
@@ -69,7 +69,7 @@
             <input type="text" id="reg-name" placeholder="اسم الطالب">
             <input type="text" id="reg-phone" placeholder="رقم الهاتف">
             <input type="password" id="reg-pass" placeholder="كلمة السر">
-            <button class="btn" onclick="register()">تسجيل</button>
+            <button class="btn" style="width:100%" onclick="register()">تسجيل</button>
         </div>
     </div>
 
@@ -80,13 +80,14 @@
             <input type="text" id="c-name" placeholder="اسم الكورس">
             <input type="text" id="c-img" placeholder="رابط الصورة">
             <input type="number" id="c-price" placeholder="السعر">
-            <button class="btn" onclick="addCourse()">إضافة الكورس</button>
+            <button class="btn" onclick="addCourse()">حفظ الكورس في جوجل</button>
         </div>
         <div class="card">
             <h3>نشر درس</h3>
             <select id="sel-c-target"></select>
             <input type="text" id="l-title" placeholder="عنوان الدرس">
             <input type="text" id="l-vid" placeholder="رابط يوتيوب">
+            <input type="text" id="l-pdf" placeholder="رابط PDF">
             <textarea id="l-text" placeholder="شرح الدرس..."></textarea>
             <button class="btn" onclick="addLesson()">نشر الدرس</button>
         </div>
@@ -100,6 +101,7 @@
             <div id="wm-layer"></div>
             <div id="player-frame"></div>
         </div>
+        <div id="pdf-btn-area"></div>
         <div id="view-l-text" style="padding:20px; line-height:1.8; background:#111; margin-top:15px; border-radius:10px"></div>
     </div>
 </div>
@@ -107,11 +109,11 @@
 <footer><div class="mrs-esraa">ميس اسراء فرج</div></footer>
 
 <script>
-    // إعدادات Firebase الخاصة بحسام
+    // --- تم تصحيح رابط قاعدة البيانات والربط هنا ---
     const firebaseConfig = {
         apiKey: "AIzaSyDdwnLfJbsQ8hbXP-CzocjaejmvYC4FOh4",
         authDomain: "://firebaseapp.com",
-        databaseURL: "https://firebaseio.com",
+        databaseURL: "https://firebaseio.com", 
         projectId: "alesraa-academy",
         storageBucket: "alesraa-academy.firebasestorage.app",
         messagingSenderId: "158593983527",
@@ -123,7 +125,7 @@
 
     let users = [], courses = [], currentUser = null;
 
-    // جلب الكورسات
+    // جلب البيانات من جوجل
     db.ref('courses').on('value', (snap) => {
         const data = snap.val();
         courses = data ? Object.values(data) : [];
@@ -131,7 +133,6 @@
         if(currentUser && currentUser.isAdmin) renderAdmin();
     });
 
-    // جلب المستخدمين
     db.ref('users').on('value', (snap) => {
         const data = snap.val();
         users = data ? Object.values(data) : [];
@@ -144,7 +145,7 @@
     function renderPublic() {
         const grid = document.getElementById('public-grid');
         if (courses.length === 0) {
-            grid.innerHTML = "<p>لا توجد كورسات مضافة. سجل دخولك كأدمن لإضافة أول كورس.</p>";
+            grid.innerHTML = "<p>لا توجد كورسات. ادخل كأدمن لإضافة أول كورس.</p>";
             return;
         }
         grid.innerHTML = courses.map(c => `
@@ -157,6 +158,7 @@
         `).join('');
     }
 
+    // --- تصحيح دالة تسجيل الدخول لتكون مرتبطة بجوجل ---
     function login() {
         const p = document.getElementById('log-phone').value;
         const s = document.getElementById('log-pass').value;
@@ -178,38 +180,36 @@
                     document.getElementById('guest-links').style.display = 'none';
                     document.getElementById('user-links').style.display = 'block';
                     showPage('home');
-                } else { alert("حسابك بانتظار التفعيل"); }
-            } else { alert("بيانات خطأ"); }
-        });
+                } else { alert("حسابك بانتظار تفعيل ميس اسراء"); }
+            } else { alert("بيانات الدخول غير صحيحة"); }
+        }).catch(err => alert("خطأ في الاتصال: " + err.message));
     }
 
     function register() {
         const p = document.getElementById('reg-phone').value;
         const n = document.getElementById('reg-name').value;
         const s = document.getElementById('reg-pass').value;
-        db.ref('users/' + p).set({ name: n, phone: p, pass: s, active: false, myCourses: [""] });
-        alert("تم! بانتظار تفعيل حسام");
-        showPage('login');
+        db.ref('users/' + p).set({ name: n, phone: p, pass: s, active: false, myCourses: [""] })
+        .then(() => { alert("تم! بانتظار تفعيل حسام"); showPage('login'); });
     }
 
     function addCourse() {
         const id = Date.now().toString();
-        db.ref('courses/' + id).set({ id, name: document.getElementById('c-name').value, img: document.getElementById('c-img').value, price: document.getElementById('c-price').value, lessons: [] });
-        alert("تمت الإضافة!");
+        db.ref('courses/' + id).set({ id, name: document.getElementById('c-name').value, img: document.getElementById('c-img').value, price: document.getElementById('c-price').value, lessons: [] })
+        .then(() => alert("تم الحفظ بنجاح!"));
     }
 
     function addLesson() {
         const cId = document.getElementById('sel-c-target').value;
         const course = courses.find(c => c.id == cId);
         if(!course.lessons) course.lessons = [];
-        course.lessons.push({ title: document.getElementById('l-title').value, vid: document.getElementById('l-vid').value, text: document.getElementById('l-text').value });
-        db.ref('courses/' + cId).set(course);
-        alert("تم النشر!");
+        course.lessons.push({ title: document.getElementById('l-title').value, vid: document.getElementById('l-vid').value, pdf: document.getElementById('l-pdf').value, text: document.getElementById('l-text').value });
+        db.ref('courses/' + cId).set(course).then(() => alert("تم النشر!"));
     }
 
     function renderAdmin() {
         document.getElementById('sel-c-target').innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        document.getElementById('admin-students').innerHTML = "<h3>تفعيل الطلاب:</h3>" + users.map(u => `
+        document.getElementById('admin-students').innerHTML = "<h3>إدارة الطلاب:</h3>" + users.map(u => `
             <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #444">
                 <span>${u.name} (${u.phone})</span>
                 <div>
@@ -240,6 +240,7 @@
         document.getElementById('view-l-title').innerText = l.title;
         document.getElementById('view-l-text').innerText = l.text;
         document.getElementById('player-frame').innerHTML = `<iframe width="100%" height="400" src="${l.vid.replace('watch?v=','embed/')}"></iframe>`;
+        document.getElementById('pdf-btn-area').innerHTML = l.pdf ? `<a href="${l.pdf}" target="_blank"><button class="btn" style="background:#e74c3c; color:white; margin-top:10px">تحميل الملزمة PDF 📄</button></a>` : '';
         const wm = document.getElementById('wm-layer');
         wm.style.display = 'block'; wm.innerText = currentUser.phone;
         setInterval(() => { wm.style.left = Math.random() * 70 + "%"; wm.style.top = Math.random() * 70 + "%"; }, 3000);
